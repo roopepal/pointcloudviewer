@@ -35,6 +35,7 @@ private:
     glm::mat4 controls_rotation;
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+    pcl::PointXYZ min_pt, max_pt, center_pt;
 
     float controls_depth_step;
     float controls_z_rotation;

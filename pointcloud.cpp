@@ -1,19 +1,11 @@
 #include "pointcloud.hpp"
-#include <iostream>
-
+#include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/point_cloud.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/transforms.h>
-
-// void PointCloud::check_colors() {
-
-//     bool found_rgb = false;
-//     for (auto field : cloud->)
-    
-
-// }
+#include <iostream>
 
 bool PointCloud::load_from_file(int argc, char* argv[]) {
 
@@ -47,5 +39,13 @@ bool PointCloud::load_from_file(int argc, char* argv[]) {
     std::cout << "Loaded a cloud of " << cloud->size() << " points" << std::endl;
     
     return true;
+
+}
+
+void PointCloud::get_dimensions(pcl::PointXYZ &min_pt, pcl::PointXYZ &max_pt, pcl::PointXYZ &center_pt) {
+
+    pcl::getMinMax3D(*cloud, min_pt, max_pt);
+    center_pt = pcl::PointXYZ((min_pt.x + max_pt.x) / 2.0f, (min_pt.y + max_pt.y) / 2.0f , (min_pt.z + max_pt.z) / 2.0f);
+    std::cout << "min_pt " << min_pt << " max_pt " << max_pt << " center_pt " << center_pt << std::endl;
 
 }

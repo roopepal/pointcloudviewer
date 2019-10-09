@@ -21,6 +21,7 @@ bool Display::start(PointCloud* pointcloud, int argc, char* argv[]) {
 
     if (pointcloud) {
         cloud = pointcloud->cloud;
+        pointcloud->get_dimensions(min_pt, max_pt, center_pt);
     } else {
         return false;
     }
@@ -93,10 +94,6 @@ void Display::setup_vao() {
     glGenBuffers(3, vbo_ids);
 
     // reference axes
-    pcl::PointXYZ min_pt;
-    pcl::PointXYZ max_pt;
-    pcl::getMinMax3D(*cloud, min_pt, max_pt);
-    pcl::PointXYZ center_pt((min_pt.x+max_pt.x)/2.0f, (min_pt.y+max_pt.y)/2.0f , (min_pt.z+max_pt.z)/2.0f);
     float axis_length = (max_pt.x - min_pt.x) / 2.0f;
     
     pcl::PointXYZ& c = center_pt;
@@ -162,13 +159,6 @@ void Display::setup_transforms() {
     }
     cloud = cube_cloud;
     //*/
-
-    // TODO: move getting cloud dimensions to a function, used elsewhere too
-    pcl::PointXYZ min_pt;
-    pcl::PointXYZ max_pt;
-    pcl::getMinMax3D(*cloud, min_pt, max_pt);
-    std::cout << "min_pt " << min_pt << " max_pt " << max_pt << std::endl;
-    pcl::PointXYZ center_pt((min_pt.x+max_pt.x)/2.0f, (min_pt.y+max_pt.y)/2.0f , (min_pt.z+max_pt.z)/2.0f);
 
     controls_z_rotation = 0.0;
     controls_depth_step = (max_pt.z - min_pt.z) / 5.0;
