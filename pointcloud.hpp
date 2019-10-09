@@ -9,6 +9,9 @@ class PointCloud {
 private:
     std::vector<int> filenames;
 
+    void remove_outliers();
+    void normalize();
+
 public:
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
     

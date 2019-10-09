@@ -13,8 +13,9 @@
 #include <random>
 
 void Display::cleanup() {
-    glDeleteBuffers(1, &vbo);
+
     glDeleteProgram(program);
+
 }
 
 bool Display::start(PointCloud* pointcloud, int argc, char* argv[]) {
@@ -94,14 +95,14 @@ void Display::setup_vao() {
     glGenBuffers(3, vbo_ids);
 
     // reference axes
-    float axis_length = (max_pt.x - min_pt.x) / 2.0f;
+    float axis_length = 1.0f;
     
     pcl::PointXYZ& c = center_pt;
 
     GLfloat axis_coords[] = {
-        c.x, c.y, c.z, c.x+axis_length, c.y, c.z,
-        c.x, c.y, c.z, c.x, c.y+axis_length, c.z,
-        c.x, c.y, c.z, c.x, c.y, c.z+axis_length,
+        0.0, 0.0, 0.0, axis_length, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, axis_length, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, axis_length,
     };
     GLfloat axis_colors[] = {
         1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
@@ -160,23 +161,21 @@ void Display::setup_transforms() {
     cloud = cube_cloud;
     //*/
 
-    controls_z_rotation = 0.0;
-    controls_depth_step = (max_pt.z - min_pt.z) / 5.0;
-    std::cout << "controls depth step: " << controls_depth_step << std::endl;
+    controls_angle = 0.0;
+    controls_depth_step = 0.25;
 
-    glm::vec3 eye(0.0, 0.0, 2.0 * max_pt.z);
-    std::cout << "eye: " << glm::to_string(eye) << std::endl;
+    glm::vec3 eye(0.0, 0.0, 3.0);
 
-    float far_clipping_distance = 4.0f * glm::distance(eye, glm::vec3(min_pt.x, min_pt.y, min_pt.z));
-    std::cout << "far clipping distance: " << far_clipping_distance << std::endl;
-
-    model = glm::translate(glm::mat4(1.0f), glm::vec3(-center_pt.x, -center_pt.y, -center_pt.z));
+    float far_clipping_distance = 10.0;
+    
+    model = glm::mat4(1.0f);
     view = glm::lookAt(eye, glm::vec3(0, 0, 0), glm::vec3(0.0, 1.0, 0.0));
     projection = glm::perspective(glm::radians(60.0f), 1.0f * width / height, 0.001f, far_clipping_distance);
-    mvp = projection * view * model;
-    
+
     controls_translation = glm::mat4(1.0f);
     controls_rotation = glm::mat4(1.0f);
+
+    mvp = projection * view;
 
 }
 
@@ -223,21 +222,20 @@ void Display::special_input(int key, int x, int y) {
         controls_translation = glm::translate(controls_translation, glm::vec3(0.0f, 0.0f, controls_depth_step));
         break;
     case GLUT_KEY_LEFT:
-        controls_z_rotation -= glm::radians(15.0f);
-        controls_rotation = glm::rotate(glm::mat4(1.0f), controls_z_rotation, glm::vec3(0, 1, 0));
+        controls_angle -= glm::radians(15.0f);
+        controls_rotation = glm::rotate(glm::mat4(1.0f), controls_angle, glm::vec3(0, 1, 0));
         break;
     case GLUT_KEY_RIGHT:
-        controls_z_rotation += glm::radians(15.0f);
-        controls_rotation = glm::rotate(glm::mat4(1.0f), controls_z_rotation, glm::vec3(0, 1, 0));
+        controls_angle += glm::radians(15.0f);
+        controls_rotation = glm::rotate(glm::mat4(1.0f), controls_angle, glm::vec3(0, 1, 0));
         break;
     default:
         break;
     }
 
-    mvp = projection * view * controls_translation * controls_rotation * model;
+    model = controls_translation * controls_rotation;
+    mvp = projection * view * model;
 
-    // glUseProgram(program);
-    // glUniformMatrix4fv(u_mvp, 1, GL_FALSE, glm::value_ptr(mvp));
     glutPostRedisplay();
 }
 

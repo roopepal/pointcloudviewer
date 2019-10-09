@@ -19,11 +19,7 @@ private:
     GLint a_coord;
     GLint a_color;
     GLint u_mvp;
-
     GLuint program;
-    GLuint vbo;
-    GLint attribute_coord;
-    
     GLint vs;
     GLint fs;
 
@@ -31,14 +27,14 @@ private:
     glm::mat4 view;
     glm::mat4 projection;
     glm::mat4 mvp;
-    glm::mat4 controls_translation; // manipulated with arrow keys
+    glm::mat4 controls_translation;
     glm::mat4 controls_rotation;
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
     pcl::PointXYZ min_pt, max_pt, center_pt;
 
     float controls_depth_step;
-    float controls_z_rotation;
+    float controls_angle;
     
     void render(void);
     void logic(void);
